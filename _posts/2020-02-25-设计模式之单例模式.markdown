@@ -1,0 +1,239 @@
+---
+layout:  post
+title:   设计模式之单例模式
+date:   2020-02-25 10:50:43
+author:  'zhangtao'
+image: '/img/post-bg-unix-linux.jpg'
+catalog: [ WORK ]
+tags:
+- 设计模式
+
+---
+
+
+## 1.定义
+
+单例模式是Java中比较常见的创建型设计模式，他的核心是确保一个类在任何情况下都绝对只有一个实例，并提供一个全局访问点。
+
+如何确保一个类在任何情况下都绝对只有一个实例？是单例模式设计的主要实现方向。下面介绍下单例模式的主要实现方法
+
+## 2.饿汉式
+
+```java
+/**
+ * 饿汉式
+ * 在类加载时直接实例化单例
+ * 缺点，类加载时就创建实例，浪费空间
+ */
+public class HungryMan {
+   
+    /**
+     * 类加载时创建初始化
+     */
+    private static final HungryMan INSTANCE = new HungryMan();
+
+    /**
+     * 私有化构造方法
+     */
+    private HungryMan(){
+   }
+
+    /**
+     * 提供全局访问点
+     * @return 单例对象
+     */
+    public static HungryMan getInstance() {
+   
+        return INSTANCE;
+    }
+}
+```
+
+## 3.懒汉式
+
+```java
+/**
+ * 懒汉式 未加锁 存在线程安全问题
+ * 在调用时才实例化单例
+ */
+public class LazyMan {
+   
+    /**
+     * 类加载时不初始化实例
+     */
+    private static LazyMan INSTANCE;
+
+    /**
+     * 私有化构造方法
+     */
+    private LazyMan() {
+   
+    }
+
+    public static synchronized LazyMan getInstance() {
+   
+        //这里需要办法保证只有一个实例
+        if (INSTANCE == null)
+            INSTANCE = new LazyMan();
+        return INSTANCE;
+    }
+}
+```
+
+### 改进版
+
+```java
+/**
+ * 懒汉式 双重检查锁单例
+ * 为了保证单例的线程安全，使用双重加锁的方式
+ * 问题：加锁所造成的性能问题
+ */
+public class LazyMan2 {
+   
+    /**
+     * 类加载时不初始化实例
+     * <p>
+     * volatile 可以防止指令重排序问题
+     */
+    private volatile static LazyMan2 INSTANCE;
+
+    /**
+     * 私有化构造方法
+     */
+    private LazyMan2() {
+   
+    }
+
+    /**
+     * 等到调用时初始化单例实例
+     * 如果没有 synchronized关键字，容易出现线程安全问题，因此需要添加synchronized进行同步
+     *
+     * @return 单例对象
+     */
+    public static LazyMan2 getInstance() {
+   
+        // 1.如果INSTANCE不为null，则不需要获取锁，提高性能
+        if (INSTANCE == null)
+            synchronized (LazyMan2.class) {
+   
+                // 2.为了避免多线程解锁后重复创建对象
+                if (INSTANCE == null)
+                    /*
+                     * CPU执行时会转换成JVM指令执行
+                     *
+                     * 1.分配内存给这个对象
+                     * 2.初始化对象
+                     * 3.将初始化后的对象和内存地址建立关联，赋值
+                     * 第二步和第三步可能调换顺序（赋值在创建对象之前），线程B在线程A赋值完时判断instance就不为null了，此时B拿到的将是一个没有初始化完成的半成品。
+                     * 所以会在单例对象添加volatile修饰
+                     */
+                    INSTANCE = new LazyMan2();
+            }
+        return INSTANCE;
+    }
+}
+```
+
+## 4.注册式单例模式
+
+### 4.1 容器式单例
+
+```java
+/**
+ * 容器式单例
+ *
+ * 容器式单例都属于注册式单例模式，其核心思想是：
+ * 在使用时，先去容器中查找，如果找到了，就将查出来的对象返回
+ * 否则，实例化，然后转载到容器中，最后将实例化的对象返回
+ */
+public class ContainerSingleton {
+   
+    /**
+     * 单例容器
+     * 存在线程安全问题，因此使用ConcurrentHashMap
+     */
+    private static final Map<String, Object> ioc = new ConcurrentHashMap<>();
+
+    /**
+     * 私有化构造函数
+     */
+    private ContainerSingleton() {
+   
+    }
+
+    /**
+     * 容器式单例模式
+     *
+     * @param key 获取单例的key
+     * @return 单例对象
+     */
+    public static Object getBean(String key) {
+   
+        if (ioc.containsKey(key)) {
+   //如果有就取出返回
+            return ioc.get(key);
+        }
+
+        //如果没有，新建-装载-返回
+        try {
+   
+            Object instance = Class.forName(key).newInstance();
+            ioc.put(key, instance);
+            return instance;
+        } catch (Exception e) {
+   
+            e.printStackTrace();
+        }
+        //装载异常， 返回空
+        return null;
+    }
+}
+```
+
+### 3.2 枚举式单例（强烈推荐）
+
+```java
+/**
+ * 枚举单例模式
+ * 属于装载类单例模式
+ *
+ * 在调用时，先查询容器中是否有此对象的实例，有就取出直接返回，否则新建一个实例并且将其装载到容器中
+ * 体现在Enum.valueOf((Class)cl, name);这个方法上
+ */
+public enum EnumSingleton {
+   
+    INSTANCE;
+
+    /**
+     * 用来扩展的对象
+     */
+    private Object object;
+
+    public Object getObject() {
+   
+        return object;
+    }
+
+    public void setObject(Object object) {
+   
+        this.object = object;
+    }
+
+    /**
+     * 提供全局访问点
+     *
+     * @return 单例对象
+     */
+    public static EnumSingleton getInstance() {
+   
+        return INSTANCE;
+    }
+}
+```
+
+## 5.简单总结
+
+- 私有化构造器 
+- 保证线程安全 
+- 延迟加载
+

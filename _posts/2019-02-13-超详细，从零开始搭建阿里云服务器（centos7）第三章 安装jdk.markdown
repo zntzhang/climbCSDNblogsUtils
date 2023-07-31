@@ -1,0 +1,54 @@
+---
+layout:  post
+title:   超详细，从零开始搭建阿里云服务器（centos7）第三章 安装jdk
+date:   2019-02-13 13:56:09
+author:  'zhangtao'
+image: '/img/post-bg-unix-linux.jpg'
+catalog: [ WORK ]
+tags:
+- linux
+
+---
+
+
+## 1.下载jdk
+
+首先去oracle官网下载你所需要版本的jdk，我下的是jdk1.8  [https://www.oracle.com/technetwork/java/javase/downloads/jdk8-downloads-2133151.html](https://www.oracle.com/technetwork/java/javase/downloads/jdk8-downloads-2133151.html)
+
+## 2.上传jdk到云服务器
+
+
+上传文件的方式有很多，这里不细说，我选择了FileZilla来进行sftp连接到云主机 ![img](https://img-blog.csdnimg.cn/20190213133609297.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3FxXzM3MjIxOTkx,size_16,color_FFFFFF,t_70) 我在usr/local目录下新建了jdk1.8的目录，并把压缩包放在了这个文件夹里
+
+## 3.解压文件
+
+然后通过 tar -zxvf 命令解压
+
+-zxvf`这些都是tar的参数。.tar.gz是一个压缩包，.tar只是打包而没有压缩，注意这点。
+
+z：通过gzip支持压缩或解压缩。还有其他的压缩或解压缩方式，比如j表示bzip2的方式。
+
+x：解压缩。c是压缩。
+
+v：在压缩或解压缩过程中显示正在处理的文件名
+
+f：f后面必须跟上要处理的文件名。也就是说你不能写成这样 tar -zxfv zhcon-0.2.5.tar.gz
+
+
+z代表gzip的压缩包；x代表解压；v代表显示过程信息；f代表后面接的是文件 ![img](https://img-blog.csdnimg.cn/20190213132724872.png)
+
+## 4.修改环境变量
+
+环境变量配置文件在 /etc 的profile，通过 vim /etc/profile 添加
+
+```java
+export JAVA_HOME=/usr/local/jdk1.7/jdk1.8.0_201
+export JRE_HOME=${JAVA_HOME}/jre  
+export CLASSPATH=.:${JAVA_HOME}/lib:${JRE_HOME}/lib  
+export  PATH=${JAVA_HOME}/bin:$PATH
+```
+
+
+
+![img](https://img-blog.csdnimg.cn/20190213134204336.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3FxXzM3MjIxOTkx,size_16,color_FFFFFF,t_70) 最后 :wq！ 保存后，source /etc/profile 使文件生效, 最后通过 java-version出现下图字样表示安装成功！ ![img](https://img-blog.csdnimg.cn/2019021313540954.png)
+

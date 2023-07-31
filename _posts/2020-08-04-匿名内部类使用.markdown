@@ -1,0 +1,239 @@
+---
+layout:  post
+title:   匿名内部类使用
+date:   2020-08-04 16:48:41
+author:  'zhangtao'
+image: '/img/post-bg-unix-linux.jpg'
+catalog: [ WORK ]
+tags:
+- java
+- java
+- 开发语言
+- 后端
+
+---
+
+
+ *在我们开发中，匿名内部类用的还是比较多的，笔者有点忘了一些细节，所以今天带大家复习一下匿名内部类* 
+
+ *匿名内部类既没有名字的内部类 正因为没有名字，所以匿名内部类只能使用一次，它通常用来简化代码编写 但使用匿名内部类还有个前提条件：必须继承一个父类或实现一个接口* 
+
+## 场景一: 不使用匿名内部类
+
+```java
+/**
+ * 场景一：不使用匿名内部类
+ * @Auther: zntzhang
+ * @Date: 2020/8/4 12:47
+ * @Description:
+ */
+public class Demo1 {
+   
+    public static void main(String[] args) {
+   
+        Animal panda = new Panda();
+        panda.eat();
+    }
+}
+
+class Animal {
+   
+    public void eat() {
+   
+        System.out.println("Animal");
+    }
+}
+
+class Panda extends Animal{
+   
+    public void eat() {
+   
+        System.out.println("Panda");
+    }
+}
+```
+
+运行结果：Panda
+
+我们用Panda继承了Animal类，然后向上造型，如果此处的Panda类只使用一次，那么单独为Panda编写一个类就有点浪费了
+
+这个时候就引入了匿名内部类，这样就不用建Panda类了
+
+
+## 场景二：匿名内部类–继承父类
+
+```java
+/**
+ * 场景二：匿名内部类--继承父类
+ * @Auther: zntzhang
+ * @Date: 2020/8/4 13:29
+ * @Description:
+ */
+public class Demo2 {
+   
+    public static void main(String[] args) {
+   
+        Animal2 panda = new Animal2() {
+   
+            // 重写父类的方法
+            public void eat() {
+   
+                System.out.println("eat panda");
+            }
+        };
+        panda.eat();
+        panda.play();
+    }
+}
+
+class Animal2 {
+   
+    public void eat() {
+   
+        System.out.println("eat Animal2");
+    }
+
+    public void play() {
+   
+        System.out.println("paly Animal2");
+    }
+}
+```
+
+运行结果：
+
+eat panda
+
+paly Animal2
+
+
+## 场景三：匿名内部类—实现接口
+
+```java
+/**
+ * 场景三：匿名内部类---实现接口
+ * @Auther: zntzhang
+ * @Date: 2020/8/4 13:38
+ * @Description:
+ */
+public class Demo3 {
+   
+    public static void main(String[] args) {
+   
+        new Animal3() {
+   
+            @Override
+            public void eat() {
+   
+                System.out.println("eat panda");
+            }
+            @Override
+            public void play() {
+   
+                System.out.println("play panda");
+            }
+        }.eat();
+    }
+}
+
+interface Animal3 {
+   
+    void eat();
+    void play();
+}
+```
+
+运行结果：eat panda
+
+
+## 场景四：使用Lamdba表达式实现匿名内部类
+
+```java
+/**
+ * 场景四：使用Lamdba表达式实现匿名内部类
+ * @Auther: zntzhang
+ * @Date: 2020/8/4 13:47
+ * @Description:
+ */
+public class Demo4 {
+   
+    public static void main(String[] args) {
+   
+        new Animal4() {
+   
+            @Override
+            public void eat() {
+   
+                System.out.println("eat panda");
+            }
+        }.eat();
+        // jdk8后被Lamdba表达式替代
+        Animal4 panda = () -> System.out.println("eat panda");
+        panda.eat();
+    }
+}
+
+// 函数式接口注解，只能有一个方法，因为Lamdba表达式只能重写一个方法
+@FunctionalInterface
+interface Animal4 {
+   
+    void eat();
+}
+```
+
+运行结果：
+
+eat panda
+
+eat panda
+
+## 场景五：匿名内部类实现简易模板模式
+
+模板模式我们通常需要设计一个**抽象类**来制定整体流程和一些公共逻辑，不同的**实现类**来定义不同的私有逻辑。
+
+而我们也可以**不创建实现类**，只用匿名内部类来实现。
+
+```java
+/**
+ * 场景五：匿名内部类实现简易模板模式
+ * @Auther: zntzhang
+ * @Date: 2020/8/4 13:29
+ * @Description:
+ */
+public class Demo2 {
+   
+    public static void main(String[] args) {
+   
+        new Animal2() {
+   
+            
+            public void init() {
+   
+                System.out.println("init eat panda");
+            };
+             public void end() {
+   
+                System.out.println("end eat panda");
+            }
+        }.eat();
+    
+    }
+}
+
+/**
+ * 抽象模板类
+ */
+abstract class Animal2 {
+   
+    public void eat() {
+   
+    	init();
+        System.out.println("eat Animal2");
+        end();
+    }
+	protected abstract void init();
+	
+	protected abstract void end();
+}
+```
+

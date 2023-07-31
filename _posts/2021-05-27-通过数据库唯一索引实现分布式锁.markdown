@@ -1,0 +1,57 @@
+---
+layout:  post
+title:   通过数据库唯一索引实现分布式锁
+date:   2021-05-27 11:06:14
+author:  'zhangtao'
+image: '/img/post-bg-unix-linux.jpg'
+catalog: [ WORK ]
+tags:
+- java
+- 锁
+- 数据库
+
+---
+
+
+伪代码
+
+```java
+// 需要加事务
+@Transactional
+@Override
+public <T> T lock(XxxLock lock, ILockCallback<T> callback) {
+   
+    // 数据库加锁
+    lock(lock);
+    // 加锁逻辑
+    T result = callback.callback();
+    //释放锁
+    try {
+   
+        lockDao.batchDelete(locks);
+    } catch (Exception e) {
+   
+        logger.error("mysql释放锁失败locks=" + locks, e);
+    }
+    return result;
+}
+```
+
+线程a、线程b 先后进入加锁的代码(加锁需要加事务) 当线程a进入时，会在数据库插入一条唯一记录，在没事务提交之前，数据库会对这条记录加锁。 这时线程b进入，在数据库插入数据时发现，这条数据已经上锁，所以会阻塞等待。 这时候有几种情况
+
+1、如果a顺利执行成功，a最后把这条唯一记录删掉。接着b会继续进行
+
+2、如果a执行失败，那么事务回滚会把这条唯一记录回滚。接着b会继续进行
+
+3、如果a执行很慢，b在a执行的过程中超时了，那么b会直接报错
+
+对比其他的分布式锁实现方式，貌似还缺了点什么，比如这个锁不可重入，无法设置超时时间 其实这些我们也可以解决， 首先可重入方面，我们可以增加一个字段记录重入的次数total，然后使用sql
+
+```java
+insert into table (`key`) values (#key#) on duplicate key update total = total + 1
+```
+
+这个sql的意思是，如果没有这条记录则新增一条记录，如果重复了那么total字段+1， 这样当a再次执行sql时，total字段会+1，但是这样结束时就不能直接删掉了，需要先-1，减到0再释放， 超时方面，我们可以设置数据库的innodb_lock_wait_timeout参数来设置超时时间，默认50s，超时则会报错
+
+弊端 之前我们一直使用的是这种方式的，但是使用时发现每天会发生上千次的死锁报错，对数据的一致性和业务稳定性会造成一定的影响。原因是因为mysql默认级别RR会产生间隙锁，增大死锁的可能性。 切换成RC后，锁冲突减少，但是插入相同的key仍然可能会导致的死锁  [https://blog.csdn.net/pml18710973036/article/details/78452688](https://note.youdao.com/)。切换成redis锁的方式，可以避免这类死锁问题
+

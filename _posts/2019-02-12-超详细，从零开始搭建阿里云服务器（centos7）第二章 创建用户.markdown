@@ -1,0 +1,46 @@
+---
+layout:  post
+title:   超详细，从零开始搭建阿里云服务器（centos7）第二章 创建用户
+date:   2019-02-12 17:31:14
+author:  'zhangtao'
+image: '/img/post-bg-unix-linux.jpg'
+catalog: [ WORK ]
+tags:
+- linux
+
+---
+
+
+## 1.创建用户
+
+远程连接完后而第一件事就是创建自己的用户，因为root用户是最高权限的超级管理员，生产上不可能使用它，
+
+```java
+adduser zntzhang  创建用户
+
+passwd zntzhang  设置密码
+```
+
+
+![img](https://img-blog.csdnimg.cn/20190213104724702.png) 这里有一篇文章写的很好，我就只写发链接了  [在centos7中添加一个新用户，并授权](http://www.cnblogs.com/woshimrf/p/5906084.html)
+
+## 2.授权
+
+个人用户的权限只可以在本home下有完整权限，其他目录要看别人授权。而经常需要root用户的权限，这时候sudo可以化身为root来操作。我记得我曾经sudo创建了文件，然后发现自己并没有读写权限，因为查看权限是root创建的。
+
+新创建的用户并不能使用sudo命令，需要给他添加授权。 sudo命令的授权管理是在sudoers文件里的。
+
+```java
+visudo  修改sudo文件,
+```
+
+
+在 root ALL=(ALL) ALL 后添加 ![img](https://img-blog.csdnimg.cn/20190213111009464.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3FxXzM3MjIxOTkx,size_16,color_FFFFFF,t_70) 最后 wq! 保存退出
+
+## 3.关于权限
+
+
+当我们使用自己创建的用户时碰到权限不够的问题， 首先我们该考虑是不是文件的权限不够， ![img](https://img-blog.csdnimg.cn/20190212172511970.png) 我们可以使用chmod来提高文件的访问权限 chmod可以用数字来表示权限如 chmod 777 file 语法为：chmod abc file 其中a,b,c各为一个数字，分别表示User、Group、及Other的权限。 r=4，w=2，x=1 若要rwx属性则4+2+1=7； 若要rw-属性则4+2=6； 若要r-x属性则4+1=5。
+
+如果我们不想修改文件权限就像操作文件，那么我们就可以使用su或sudo+指令来切换root用户进行操作 这两个有什么区别呢？  [linux权限之su和sudo的差别](https://www.cnblogs.com/slgkaifa/p/6852884.html)
+

@@ -1,0 +1,69 @@
+---
+layout:  post
+title:   用Java给女友自动提交工作内容的自动化脚本
+date:   2022-02-06 13:23:31
+author:  'zhangtao'
+image: '/img/post-bg-unix-linux.jpg'
+catalog: [ WORK ]
+tags:
+- java
+- java
+- 自动化
+- spring boot
+
+---
+
+
+ *女朋友每天早上都需要登录某工作网站提交一项内容，其实在程序员看来，这些都是可以用代码自动化解决的，于是我开始加班加点搞了起来。* 
+
+## 整理需求
+
+首先她需要早上登录某网站，然后进入某一目录，点击提交。如果能每天不用自己点网站，自动化帮我做好这件事情，那就最好了
+
+## 技术选型&& 功能设计
+
+首先需要挑选框架，我这边用的是springboot,因为这个搭建和部署都比较方便
+
+然后发起登录请求网站获得cookie,然后再发起提交请求。我这边用的是httpclient的工具来做的，因为这个我比较熟悉
+
+其次，需要用定时任务框架来每天定时执行代码，我这边用的是spring的@Scheduled,因为这个使用起来比较简单，并且符合需求
+
+最后的一个附加需求，就是我需要知道每天这个定时任务是执行失败了还是成功的，于是我使用了钉钉机器人来每天通知
+
+## code
+
+1、我们通过idea创建项目，使用阿里的springboot脚手架会比较方便
+
+2、使用httpclient传入账号密码请求登录请求，使用CookieStore来获取并存储cookie。登录成功后，调用提交请求
+
+3、在方法上加上@Scheduled注解，并将这个类加上@Component注解注册到spring，最后在springboot启动类上加上@EnableScheduling注解就可以
+
+4、钉钉机器人通知，引入alibaba-dingtalk-service-sdk的sdk jar包,然后钉钉机器人需要在钉钉群（把女朋友和你拉进去，面对面建群）里添加，然后保存它token。钉钉开发文档上的例子可以直接拿来复制，调整下就可以使用。
+
+## 部署
+
+我是部署在阿里云服务器上的，首先我们把项目mvn clean package打包成jar包，然后上传到服务器上（这里可以使用一些小工具来自动化部署），最后输入
+
+```java
+nohup java -jar jiajiawork-0.0.1-SNAPSHOT.jar  >jiajiawork.log 2>&1 &;
+```
+
+指令启动springboot服务器（nohup是让springboot后台启动，&gt;jiajiawork.log 2&gt;&amp;1 &amp;是将日志输入到log文件中）
+
+
+最后，代码就不粘贴了，涉及到一些隐私，主要讲了整体的一个思路
+
+ *参考文献* 
+
+ [IDEA 2020.1 创建springboot项目（国内脚手架）安装lombok](https://www.cnblogs.com/xfyuao/p/12762684.html)
+
+ [java实现调用http请求的几种常见方式](https://blog.csdn.net/riemann_/article/details/90539829)
+
+ [CloseableHttpClient学习笔记(获取cookies+携带获取的cookies访问post接口)](https://blog.csdn.net/wsrfljygracie/article/details/89181318)
+
+ [Idea+springboot+schedule定时任务的简单使用](https://blog.csdn.net/qq_42570879/article/details/99642615)
+
+ [钉钉开放平台](https://open.dingtalk.com/document/robots/customize-robot-security-settings)
+
+ [springboot项目打包jar文件在linux后台启动](https://blog.csdn.net/qq_39848608/article/details/105475546)
+

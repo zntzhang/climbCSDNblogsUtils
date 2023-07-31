@@ -1,0 +1,267 @@
+---
+layout:  post
+title:   设计模式之观察者模式
+date:   2022-08-16 21:04:57
+author:  'zhangtao'
+image: '/img/post-bg-unix-linux.jpg'
+catalog: [ WORK ]
+tags:
+- 设计模式
+- 设计模式
+- 观察者模式
+- java
+
+---
+
+
+ *观察者模式是我现在公司用的很广泛的一种设计模式，同时也十分好用，下面我推荐给大家* 
+
+
+首先我们要明白为什么需要观察者模式，我们举个例子分析。比如我们电商系统有一个商品改名了，那么如果会触发下面逻辑 ![img](https://img-blog.csdnimg.cn/img_convert/057a70734cc791b43a82d214e1029303.jpeg) 我们用代码实现如下
+
+```java
+public class ObserverDemo {
+   
+    public static void main(String[] args) {
+   
+        ObserverDemo o = new ObserverDemo();
+        o.itemChangeName();
+    }
+
+    public void itemChangeName() {
+   
+        System.out.println("商品改名成功");
+        changeOrderItemName();
+        log();
+    }
+
+    public void changeOrderItemName() {
+   
+        System.out.println("订单相关商品改名成功");
+    }
+
+    public void log() {
+   
+        System.out.println("记录操作日志");
+    }
+}
+```
+
+执行结果如下
+
+
+![img](https://img-blog.csdnimg.cn/dc98fd10441740fba1d722abdcdcfe61.jpeg#pic_center)
+
+这样写看似没什么问题，某一天产品经理突然说，商品改名需要把采购单据的相关商品名称也要同步修改，那么我们在itemChangeName 方法里又要进行修改，添加修改采购单相关方法。这样就违反了设计原则中的开闭原则。
+
+```java
+public class ObserverDemo {
+   
+    public static void main(String[] args) {
+   
+        ObserverDemo o = new ObserverDemo();
+        o.itemChangeName();
+    }
+
+    public void itemChangeName() {
+   
+        System.out.println("商品改名成功");
+        changeOrderItemName();
+        changePurchaseOrderItemName();
+        log();
+    }
+
+    public void changeOrderItemName() {
+   
+        System.out.println("订单相关商品改名成功");
+    }
+
+    public void changePurchaseOrderItemName() {
+   
+        System.out.println("采购相关商品改名成功");
+    }
+
+    public void log() {
+   
+        System.out.println("记录操作日志");
+    }
+}
+```
+
+
+有没有什么办法可以不修改这个方法呢，我们引入本期主题–观察者模式 我先画个图让大家看下观察者模式是怎么实现的 ![img](https://img-blog.csdnimg.cn/img_convert/38c7eb0de5815b610dfb2697536569ab.jpeg) 看着是不是跟消息队列有点像，其实消息队列也是用了观察者模式的思想。 我们用代码实现下定义事件接口及实现类
+
+```java
+/**
+ * @program: DesignPatternsDemo
+ * @description: 事件接口
+ * @author: chunri
+ * @create: 2022-08-16 17:49
+ **/
+public interface EventListener {
+   
+    
+    void doEvent();
+
+    String getEventName();
+}
+
+/**
+ * @program: DesignPatternsDemo
+ * @description: 订单商品名称修改事件监听
+ * @author: chunri
+ * @create: 2022-08-16 17:49
+ **/
+public class OrderChangeItemNameListener implements EventListener {
+   
+   @Override
+    public void doEvent() {
+   
+        changeOrderItemName();
+    }
+
+    @Override
+    public String getEventName() {
+   
+        return "item.change.name";
+    }
+
+    public void changeOrderItemName() {
+   
+        System.out.println("订单相关商品改名成功");
+    }
+}
+
+/**
+ * @program: DesignPatternsDemo
+ * @description: 采购商品名称修改事件监听
+ * @author: chunri
+ * @create: 2022-08-16 17:51
+ **/
+public class PurchaseChangeItemNameListener implements EventListener{
+   
+
+    @Override
+    public void doEvent() {
+   
+        changePurchaseOrderItemName();
+    }
+
+    @Override
+    public String getEventName() {
+   
+        return "item.change.name";
+    }
+
+    public void changePurchaseOrderItemName() {
+   
+        System.out.println("采购相关商品改名成功");
+    }
+
+}
+
+/**
+ * @program: DesignPatternsDemo
+ * @description: 记录日志
+ * @author: chunri
+ * @create: 2022-08-16 17:52
+ **/
+public class LogListener implements EventListener{
+   
+     @Override
+    public void doEvent() {
+   
+        log();
+    }
+
+    @Override
+    public String getEventName() {
+   
+        return "item.change.name";
+    }
+
+    public void log() {
+   
+        System.out.println("记录操作日志");
+    }
+}
+```
+
+事件核心处理
+
+```java
+/**
+ * @program: DesignPatternsDemo
+ * @description: 事件处理
+ * @author: chunri
+ * @create: 2022-08-16 20:30
+ **/
+public class EventHandler {
+   
+
+     Map<String, List<EventListener>> listeners = new HashMap<>();
+
+    /**
+     * 订阅
+     * @param listener  监听
+     */
+    public void subscribe(EventListener
+            listener) {
+   
+        List<EventListener> users = listeners.computeIfAbsent(listener.getEventName(), k -> new ArrayList<>());
+        users.add(listener);
+    }
+
+    /**
+     * 通知
+     * @param eventType 事件类型
+     */
+    public void notify(String eventType) {
+   
+        List<EventListener> users = listeners.get(eventType);
+        for (EventListener listener : users) {
+   
+            listener.doEvent();
+        }
+    }
+}
+```
+
+我们执行main方法执行结果跟老方法相同。这样如果后续商品改名需要同步修改采购单的商品名称，我们只需要再增加一个事件实现类添加进去就ok了，无需修改代码，这样遵从了开闭原则
+
+```java
+/**
+ * @program: DesignPatternsDemo
+ * @description: 观察者模式
+ * @author: chunri
+ * @create: 2022-08-16 17:47
+ **/
+public class ObserverDemo2 {
+   
+    
+     private static final String ITEM_CHANGE_NAME = "item.change.name";
+    private EventHandler eventManager;
+
+    public ObserverDemo2() {
+   
+        eventManager = new EventHandler();
+        eventManager.subscribe(new OrderChangeItemNameListener());
+        eventManager.subscribe(new PurchaseChangeItemNameListener());
+        eventManager.subscribe(new LogListener());
+    }
+    
+    public static void main(String[] args) {
+   
+        ObserverDemo2 o = new ObserverDemo2();
+        o.itemChangeName();
+    }
+
+    public void itemChangeName() {
+   
+        System.out.println("商品改名成功");
+        eventManager.notify(ITEM_CHANGE_NAME);
+    }
+
+}
+```
+

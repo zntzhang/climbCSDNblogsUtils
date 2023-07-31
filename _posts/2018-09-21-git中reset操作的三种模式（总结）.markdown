@@ -1,0 +1,17 @@
+---
+layout:  post
+title:   git中reset操作的三种模式（总结）
+date:   2018-09-21 17:14:56
+author:  'zhangtao'
+image: '/img/post-bg-unix-linux.jpg'
+catalog: [ WORK ]
+tags:
+- java
+
+---
+
+
+首先，git 本地提交，会经过三个步骤。 这三个步骤的流程不多做解释 工作区 --&gt; 暂存区 --&gt;版本库
+
+然后 git reset –soft 可以把版本库上的提交回退到暂存区，修改记录保留 git reset –mixed 可以把版本库上的提交回退到工作区，修改记录保留 git reset –hard 可以把版本库上的提交彻底回退，修改的记录全部回滚。
+

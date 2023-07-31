@@ -1,0 +1,53 @@
+---
+layout:  post
+title:   从零开始搭建SSM
+date:   2017-12-16 10:23:52
+author:  'zhangtao'
+image: '/img/post-bg-unix-linux.jpg'
+catalog: [ WORK ]
+tags:
+- java
+- 框架
+- java
+- ssm
+
+---
+
+
+下面是我搭建框架时参考的文章以及自己的觉得重要的笔记,如果大家只是搭建框架,前三步就足够了.
+
+
+ [http://blog.csdn.net/gebitan505/article/details/44455235/](http://blog.csdn.net/gebitan505/article/details/44455235/)
+
+## 2.配置事务管理
+
+ [http://blog.csdn.net/zhshulin/article/details/38108159](http://blog.csdn.net/zhshulin/article/details/38108159)
+
+## 3.log4j配置
+
+ [http://blog.csdn.net/github_32658299/article/details/54288923](http://blog.csdn.net/github_32658299/article/details/54288923)
+
+## 4.SSM集成WebService
+
+ [http://blog.csdn.net/qq_18661793/article/details/52057344](http://blog.csdn.net/qq_18661793/article/details/52057344)
+
+## 5.SSM集成Shiro
+
+ [http://blog.csdn.net/u013142781/article/details/50629708](http://blog.csdn.net/u013142781/article/details/50629708)
+
+## 6.分页
+
+ [http://blog.csdn.net/zhshulin/article/details/26447713](http://blog.csdn.net/zhshulin/article/details/26447713)
+
+## SSM学习记录
+
+1.springmvc的运行过程 &nbsp;&nbsp;&nbsp;&nbsp;a.客户端发起请求到前端控制器(DispatcherServlet). &nbsp;&nbsp;&nbsp;&nbsp;b.前端控制器请求HandlerMappering 查找Handler，可以根据xml配置、注解进行查找。 &nbsp;&nbsp;&nbsp;&nbsp;c.DispatcherServlet将请求提交到Controller； &nbsp;&nbsp;&nbsp;&nbsp;d.Controller调用业务逻辑处理后，返回ModelAndView； &nbsp;&nbsp;&nbsp;&nbsp;e.DispatcherServlet查询一个或多个ViewResoler视图解析器，找到ModelAndView指定的视图； &nbsp;&nbsp;&nbsp;&nbsp;f.视图负责将结果显示到客户端
+
+2.拦截器(登陆拦截)与过滤器(乱码)的区别： &nbsp;&nbsp;&nbsp;&nbsp;拦截器是基于java的反射机制的，而过滤器是基于函数回调。 &nbsp;&nbsp;&nbsp;&nbsp;拦截器不依赖与servlet容器，过滤器依赖与servlet容器。 &nbsp;&nbsp;&nbsp;&nbsp;拦截器只能对action请求起作用，而过滤器则可以对几乎所有的请求起作用。 &nbsp;&nbsp;&nbsp;&nbsp;拦截器可以访问action上下文、值栈里的对象，而过滤器不能访问。 &nbsp;&nbsp;&nbsp;&nbsp;在action的生命周期中，拦截器可以多次被调用，而过滤器只能在容器初始化时被调用一次
+
+```java
+&nbsp;&nbsp;&nbsp;&nbsp;执行顺序：过滤前 – 拦截前 – Action处理 – 拦截后 – 过滤后。
+```
+
+3.SpringMVC框架中,jsp页面引用的js，css，html等静态文件在运行时出现404错误，也就是说找不到文件路径； 我在引用的时候写的是相对路径，并且路径是完全正确的，那为什么会出现这种错误呢？ &nbsp;&nbsp;&nbsp;&nbsp;1.如果你的配置描述符文件(web.xml)中,DispatcherServlet拦截为”*.do”这样的有后缀的URL，就不存在访问不到静态资源的现象。 &nbsp;&nbsp;&nbsp;&nbsp;2.如果你的配置描述符文件(web.xml)中,DispatcherServlet拦截为”/”，就会出现访问不到的的现象；
+

@@ -1,0 +1,159 @@
+---
+layout:  post
+title:   Spring容器初始化和解决循环依赖问题的分析
+date:   2020-06-25 11:57:28
+author:  'zhangtao'
+image: '/img/post-bg-unix-linux.jpg'
+catalog: [ WORK ]
+tags:
+- spring
+
+---
+
+
+
+
+![img](https://imgconvert.csdnimg.cn/aHR0cHM6Ly9naXRlZS5jb20venQxOTk0MTIxNC9pbWFnZUJlZC9yYXcvbWFzdGVyL3VQaWMvJUU0JUJDJTgxJUU0JUI4JTlBJUU1JUJFJUFFJUU0JUJGJUExMjAyMDA2MjUxMDM2MzEucG5n?x-oss-process=image/format,png)
+
+
+1. Bean 容器找到配置文件中 Spring Bean 的定义。（**beanDefintion**） 
+2. Bean 容器利用 Java Reflection API 创建一个Bean的实例。(**执行构造方法**) 
+3. 如果涉及到一些属性值 利用 set()方法设置一些属性值。（**set属性**） 
+4. 如果 Bean 实现了 BeanNameAware 接口，调用 setBeanName()方法，传入Bean的名字。（**aware接口的相关方法**） 
+5. 如果 Bean 实现了 BeanClassLoaderAware 接口，调用 setBeanClassLoader()方法，传入 ClassLoader对象的实例。 
+6. 与上面的类似，如果实现了其他 *.Aware接口，就调用相应的方法。 
+<li>如果有和加载这个 Bean 的 Spring 容器相关的 BeanPostProcessor 对象，执行postProcessBeforeInitialization() 方法 （**BeanPostProcessor的before方法**）</li> 
+8. 如果Bean实现了InitializingBean接口，执行afterPropertiesSet()方法。（**afterPropertiesSet方法**） 
+9. 如果 Bean 在配置文件中的定义包含 init-method 属性，执行指定的方法。（**init-method方法**） 
+<li>如果有和加载这个 Bean的 Spring 容器相关的 BeanPostProcessor 对象，执行postProcessAfterInitialization() 方法 （**BeanPostProcessor的after方法（生成代理类）**）</li> 
+11. 当要销毁 Bean 的时候，如果 Bean 实现了 DisposableBean 接口，执行 destroy() 方法。（**destroy方法**） 
+12. 当要销毁 Bean 的时候，如果 Bean 在配置文件中的定义包含 destroy-method 属性，执行指定的方法。（**destroy-method方法**）
+
+
+一种是A依赖了B，B又依赖了A， 另一种情况是A自己依赖了自己。
+
+无线套娃
+
+
+Spring运用了三级缓存解决了循环依赖
+
+1. singletonObjects：用于存放完全初始化好的 bean，从该缓存中取出的 bean 可以直接使用 
+2. earlySingletonObjects：提前曝光的单例对象的cache，存放原始的 bean 对象（尚未填充属性），用于解决循环依赖 
+3. singletonFactories：单例对象工厂的cache，存放 bean 工厂对象，用于解决循环依赖
+
+
+具体流程图如下 ![img](https://imgconvert.csdnimg.cn/aHR0cHM6Ly9naXRlZS5jb20venQxOTk0MTIxNC9pbWFnZUJlZC9yYXcvbWFzdGVyL3VQaWMvc3ByaW5nJUU1JThBJUEwJUU4JUJEJUJEYmVhbiVFNiVCNSU4MSVFNyVBOCU4QiVFNSU5QiVCRSUyMCUyODYlMjkucG5n?x-oss-process=image/format,png) B中从三级缓存取出的A早期引用和A本身是一个引用，这样当A完成了初始化后，B中的A也完成了初始化
+
+## 4.1 普通bean（未经代理的bean）解决循环依赖
+
+如果单纯的解决普通bean循环依赖，A在赋值前，把早期bean放入缓存，然后B在赋值A时，从缓存中取出。其实用一层缓存就够了，为什么需要做3层缓存呢？
+
+## 4.2 事务代理类解决循环依赖
+
+上面说为什么需要做3层缓存，其中一个原因就是为了解决代理类的循环依赖。如果我们只用一层缓存，那么B依赖的就是一个普通的bean，而不是一个代理bean。
+
+而我们的第三级缓存中调用的工厂方法 getEarlyBeanReference生成早期bean，并且会调用**事务代理的后置处理器【AnnotationAwareAspectJAutoProxyCreator】的父类【AbstractAutoProxyCreator】的getEarlyBeanReference**生成代理（如果有加事务注解）
+
+```java
+protected Object getEarlyBeanReference(String beanName, RootBeanDefinition mbd, Object bean) {
+   
+		Object exposedObject = bean;
+		if (!mbd.isSynthetic() && hasInstantiationAwareBeanPostProcessors()) {
+   
+			for (SmartInstantiationAwareBeanPostProcessor bp : getBeanPostProcessorCache().smartInstantiationAware) {
+   
+				// 会调用事务的后置处理器AbstractAutoProxyCreator的getEarlyBeanReference方法生成代理
+				exposedObject = bp.getEarlyBeanReference(exposedObject, beanName);
+			}
+		}
+		return exposedObject;
+	}
+```
+
+【AbstractAutoProxyCreator】生成代理的方法做了处理，只会被代理一次，这样就解决了一个bean被多次代理（生成多个代理类）的问题
+
+```java
+protected Object wrapIfNecessary(Object bean, String beanName, Object cacheKey) {
+   
+
+		// 已经被代理则直接返回
+		if (Boolean.FALSE.equals(this.advisedBeans.get(cacheKey))) {
+   
+			return bean;
+		}
+		// 代理的逻辑....
+		// 标记已经被代理
+		this.advisedBeans.put(cacheKey, Boolean.FALSE);
+		return bean;
+	}
+```
+
+如果A被循环依赖且被事务代理，根据上面的逻辑，B中的A是代理类，而A自己因为循环依赖中的B先一步生成了A的代理，**所以A不会在initializeBean中生成代理类**。这样会导致两个bean不相等，所以spring在bean初始化的最后，会进行校验，如果A没有被代理并且缓存中有A，这样会把缓存中的A赋值A自己，这样就解决了两个A不一致的问题。
+
+```java
+if (earlySingletonExposure) {
+   
+	// 只从一二级缓存中找（是不是被循环依赖了）
+	Object earlySingletonReference = getSingleton(beanName, false);
+	if (earlySingletonReference != null) {
+   
+		// 创建的bean是否经BeanPostProcessor变成代理
+		if (exposedObject == bean) {
+   
+			exposedObject = earlySingletonReference;
+		}
+		// ...
+	}
+}
+```
+
+## 4.3 没有循环依赖的bean怎么生成代理类
+
+没有循环依赖的话，initializeBean方法中会调用beanPostProcessor的after方法，生成所有的代理（包括事务）
+
+## 4.4 @async代理循环依赖报错
+
+比如A加了@async，A-&gt;b-&gt;A就会循环依赖报错， 原因是bean在初始化最后校验中，如果发现A已经被代理，且被循环依赖，就会直接报错 （而加事务不会，因为A中还是普通的bean，代理bean的是B中的A，所以不会进这个逻辑） **（@async的后处理器【AsyncAnnotationBeanPostProcessor】跟【AnnotationAwareAspectJAutoProxyCreator】不同的是，【AnnotationAwareAspectJAutoProxyCreator】有一个getEarlyBeanReference方法，循环依赖的时getEarlyBeanReference会调用这个方法先一步生成代理类，而@async的代理只能在initializeBean方法中调用的beanPostProcessor的after方法来生成）**
+
+```java
+if (earlySingletonExposure) {
+   
+			// 只从一二级缓存中找（是不是被循环依赖了）
+			Object earlySingletonReference = getSingleton(beanName, false);
+			if (earlySingletonReference != null) {
+   
+				// 创建的bean是否经BeanPostProcessor变成代理
+				// 还是普通bean
+				if (exposedObject == bean) {
+   
+					exposedObject = earlySingletonReference;
+				}
+				// 已经变成代理则报错
+				else if (!this.allowRawInjectionDespiteWrapping && hasDependentBean(beanName)) {
+   
+					String[] dependentBeans = getDependentBeans(beanName);
+					Set<String> actualDependentBeans = new LinkedHashSet<>(dependentBeans.length);
+					for (String dependentBean : dependentBeans) {
+   
+						if (!removeSingletonIfCreatedForTypeCheckOnly(dependentBean)) {
+   
+							actualDependentBeans.add(dependentBean);
+						}
+					}
+					if (!actualDependentBeans.isEmpty()) {
+   
+						throw new BeanCurrentlyInCreationException(beanName,
+								"Bean with name '" + beanName + "' has been injected into other beans [" +
+								StringUtils.collectionToCommaDelimitedString(actualDependentBeans) +
+								"] in its raw version as part of a circular reference, but has eventually been " +
+								"wrapped. This means that said other beans do not use the final version of the " +
+								"bean. This is often the result of over-eager type matching - consider using " +
+								"'getBeanNamesForType' with the 'allowEagerInit' flag turned off, for example.");
+					}
+				}
+			}
+		}
+```
+
+**参考文章**  [Spring getBean是如何解决循环依赖和多次动态代理](https://juejin.im/post/5dec9fe76fb9a01608236cd3)  [一文告诉你Spring是如何利用"三级缓存"巧妙解决Bean的循环依赖问题的](https://blog.csdn.net/f641385712/article/details/92801300)  [Spring的BeanFactoryPostProcessor和BeanPostProcessor](https://blog.csdn.net/caihaijiang/article/details/35552859)  [女同事问敖丙什么是 Spring 循环依赖？我…](https://mp.weixin.qq.com/s/5mwkgJB7GyLdKDgzijyvXw)  [Spring 中的 bean 生命周期?](https://snailclimb.gitee.io/javaguide/#/docs/system-design/framework/spring/SpringInterviewQuestions)
+

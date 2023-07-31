@@ -1,0 +1,39 @@
+---
+layout:  post
+title:   MyCAT简单笔记
+date:   2017-12-23 15:25:43
+author:  'zhangtao'
+image: '/img/post-bg-unix-linux.jpg'
+catalog: [ WORK ]
+tags:
+- 数据库
+- 数据库
+- mysql
+- mycat
+- 分片
+
+---
+
+
+## 1.为什么要使用MyCAT?
+
+MyCAT是mysql中间件,一个可以视为**MySQL集群**的企业级数据库，用来替代昂贵的Oracle集群
+
+## 2.MyCAT中我的理解
+
+我们公司使用MyCAT作为mysql的中间件,起初一直不理解全局表和分片表的概念,后来在网上看了一些大牛的博客渐渐理解了一些. 首先假设我们创建了两个数据库dn1,dn2 通过MyCAT来管控这两个数据库, 比如说我要建一张user表, 如果它是全局表, 1) 首先在schema.xml中配置<table name="表名" primaryKey="ID" type="global" dataNode="dn1,dn2" />后重启mycat 2)其次用sql语句创建后,就能在两个数据库dn1,dn2中均创建user表 如果它是分片表, 1) 首先在schema.xml中配置<table name="表名" primaryKey="ID" dataNode="dn1,dn2" rule="123456xxx" />(rule可在rule.xml配置)后重启mycat 2)其次用sql语句创建后,就能在dn1或dn2中的某一分片创建user表
+
+在查询全局表时，会随机挑选一片来输出。  在查询分片表时，如果传入分片字段，会直接访问对应的数据库。如果未传入分片字段，会查询所有数据库的数据合并（虽然也能查出，但是影响性能）
+
+## 3.MyCAT配置文件
+
+server.xml是Mycat服务器参数调整和用户授权的配置文件 schema.xml是逻辑库定义和表以及分片定义的配置文件 rule.xml是分片规则的配置文件【分片字段】
+
+## 4.MyCAT中出现问题
+
+使用mycat后查询表数据,经常会出现查询多次数据不一致,原因是由于在修改表数据时没使用sql修改,而是直接在可视化工具里修改提交,这样会导致全局表只修改了一个分片.导致两个分片数据不一致.
+
+## 5.mycat具体安装操作请参考
+
+ [https://www.cnblogs.com/ivictor/p/5111495.html](https://www.cnblogs.com/ivictor/p/5111495.html)
+

@@ -1,0 +1,26 @@
+---
+layout:  post
+title:   捞取大量数据慢查询优化
+date:   2021-11-07 16:56:59
+author:  'zhangtao'
+image: '/img/post-bg-unix-linux.jpg'
+catalog: [ WORK ]
+tags:
+- java
+- 并发
+- 优化
+
+---
+
+
+
+双11期间这家客户积压了5w笔订单没有发货，所以客户反映每次计算都很慢，需要几十秒的时间。波次计算的代码需要把系统中审核的订单捞出来后进行计算分组划分到不同的批次中。
+
+
+首先我们通过链路和althas排查，发现查询子订单的sql需要in 5w个id。导致这个sql异常的慢，需要17s。
+
+
+
+
+于是我们商量了方案，首先这个sql就是一个简单的单表查询，in的字段也加了索引，所以不需要额外加索引，主要问题还是in的数量太多，查询很慢。采取多线程分批并行查sql这个方案，2000一批。查完后再聚合数据。使用了forkjoinpool配合parallelStream的方式，最终控制在了1s，速度大大提升 老代码 ![img](https://img-blog.csdnimg.cn/img_convert/36a033a243f7522b1477a8fca0e35a02.png#pic_center) 现代码 ![img](https://img-blog.csdnimg.cn/img_convert/a59d17b6acdce760b6e51828b7a2e9d8.png#pic_center)
+

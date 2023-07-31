@@ -1,0 +1,170 @@
+---
+layout:  post
+title:   SPI机制应用
+date:   2020-07-27 09:55:42
+author:  'zhangtao'
+image: '/img/post-bg-unix-linux.jpg'
+catalog: [ WORK ]
+tags:
+- java
+
+---
+
+
+为什么要使用SPI?
+
+系统设计的各个抽象，往往有很多不同的实现方案，在面向的对象的设计里，一般推荐模块之间基于接口编程，模块之间不对实现类进行硬编码。
+
+一旦代码里涉及具体的实现类，就违反了**可拔插**的原则，如果需要替换一种实现，就需要修改代码。为了实现在模块装配的时候能不在程序里动态指明，这就需要一种服务发现机制。
+
+SPI 全称 Service Provider Interface，是一种服务发现机制。它很像基于配置文件的工厂模式
+
+首先，将需要使用的接口的实现类全限定名写在配置文件中 然后，运行时通过调用相关Loder读取配置，从而加载需要的实现类，达到**动态扩展**的目的，避免了硬编码。
+
+因此，SPI 机制在开源框架中有大量的应用。
+
+## 首先讲一下Java的SPI机制
+
+让我们通过一个简单的例子，来看看Java SPI是如何工作的。
+
+1. 定义一个接口IRepository用于实现数据储存
+
+```java
+public interface IRepository {
+   
+    void save(String data);
+}
+```
+
+1. 提供IRepository的实现
+
+IRepository有两个实现。MysqlRepository和MongoRepository。
+
+```java
+public class MysqlRepository implements IRepository {
+   
+    public void save(String data) {
+   
+        System.out.println("Save " + data + " to Mysql");
+    }
+}
+public class MongoRepository implements IRepository {
+   
+    public void save(String data) {
+   
+        System.out.println("Save " + data + " to Mongo");
+    }
+}
+```
+
+1. 添加配置文件
+
+在META-INF/services目录添加一个文件，文件名和接口全名称相同，所以文件是META-INF/services/com.demo.IRepository。文件内容为:
+
+```java
+com.demo.MongoRepository
+com.demo.MysqlRepository
+```
+
+1. 通过ServiceLoader加载IRepository实现
+
+```java
+ServiceLoader<IRepository> serviceLoader = ServiceLoader.load(IRepository.class);
+Iterator<IRepository> it = serviceLoader.iterator();
+while (it != null && it.hasNext()){
+   
+    IRepository demoService = it.next();
+    System.out.println("class:" + demoService.getClass().getName());
+    demoService.save("tom");
+}
+```
+
+在上面的例子中，我们定义了一个扩展点和它的两个实现。在ClassPath中添加了扩展的配置文件，最后使用ServiceLoader来加载所有的扩展点。 最终的输出结果为：
+
+```java
+class:testDubbo.MongoRepository Save tom to Mongo
+class:testDubbo.MysqlRepository Save tom to Mysql
+```
+
+## Dubbo的SPI
+
+Dubbo借鉴了Java SPI的思想，其提供的功能比JDK更为强大
+
+### 加载路径
+
+Java SPI从/META-INF/services目录加载扩展配置，Dubbo从以下路径去加载扩展配置文件：
+
+- META-INF/dubbo/internal 
+- META-INF/dubbo 
+- META-INF/services
+
+其中META-INF/dubbo对开发者开放，META-INF/dubbo/internal 这个路径是用来加载Dubbo内部的拓展点的
+
+Dubbo 所有的接口几乎都预留了扩展点，根据用户参数来适配不同的实现。如果想增加新的接口实现，只需要按照SPI的规范增加配置文件，并指向新的实现即可
+
+我们来看Dubbo SPI是如何扩展一个Dubbo功能的。
+
+```java
+/**
+ * @author 
+ */
+@SPI
+public interface Animal {
+   
+
+    void say();
+
+}
+
+/**
+ * @author 
+ */
+public class Pig implements Animal {
+   
+    public void say() {
+   
+        System.out.println("猪叫");
+    }
+}
+
+
+/**
+ * @author 
+ */
+public class SpiTest {
+   
+
+    public static void main(String[] args) {
+   
+
+        ExtensionLoader<Animal> extensionLoader = ExtensionLoader.getExtensionLoader(Animal.class);
+
+        Animal pig = extensionLoader.getExtension("pig");
+
+        pig.say();
+
+    }
+
+}
+```
+
+```java
+//配置文件classpath: META-INF/dubbo/com.example.dubbo.spi.Animal
+pig = com.example.dubbo.spi.Pig
+dog = com.example.dubbo.spi.Dog
+```
+
+## SpringBoot的SPI机制
+
+当我们使用Starter时，SpringBoot启动时SpringFactoriesLoader会读取spring.factories来加载对应的Configuration，将里面的对象放入到 Spring容器中管理
+
+ *参考文章：* 
+
+ [高级开发必须理解的Java中SPI机制](https://developer.aliyun.com/article/640161)
+
+ [Dubbo可扩展机制实战](http://dubbo.apache.org/zh-cn/blog/introduction-to-dubbo-spi.html)
+
+ [springboot SPI 扩展机制](https://www.jianshu.com/p/6756d61b892f)
+
+ [SPI 在 Dubbo中 的应用](https://juejin.cn/post/6906659513642778632?utm_source=gold_browser_extension)
+

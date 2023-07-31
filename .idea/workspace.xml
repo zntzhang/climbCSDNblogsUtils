@@ -1,53 +1,15 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
+  <component name="AutoImportSettings">
+    <option name="autoReloadType" value="ALL" />
+  </component>
   <component name="ChangeListManager">
     <list default="true" id="1c6b2535-c64f-49f5-93e7-6b0f5e1d21f1" name="Default Changelist" comment="">
-      <change afterPath="$PROJECT_DIR$/.idea/.gitignore" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/compiler.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/libraries/lib.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/vcs.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/_posts/2017-12-15-(function($){})(jQuery)、jQuery.extend({})、jQuery.fn.extend()的含义与之间的联系运用.markdown" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/_posts/2017-12-16-Redis简单笔记.markdown" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/_posts/2017-12-16-从零开始搭建SSM.markdown" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/_posts/2017-12-16-数据库建立索引的优缺点.markdown" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/_posts/2017-12-23-MyCAT简单笔记.markdown" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/_posts/2017-12-23-Spring AOP控制事务.markdown" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/_posts/2018-02-07-git使用笔记.markdown" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/_posts/2018-04-20-Integer比较 ==与equals.markdown" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/_posts/2018-05-31-spring中service调用service如何保持事务一致.markdown" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/_posts/2018-08-20-nginx的配置、虚拟主机、负载均衡和反向代理.markdown" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/_posts/2018-09-21-git中reset操作的三种模式（总结）.markdown" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/_posts/2018-10-11-Java常量池理解与总结.markdown" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/_posts/2018-10-13-java基本数据类型传递与引用传递区别详解.markdown" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/_posts/2018-10-22-数据库之锁与事务.markdown" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/_posts/2018-11-13-数据库索引总结.markdown" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/_posts/2018-12-22-JSESSIONID的简单说明.markdown" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/_posts/2019-01-22-Maven仓库snapshot快照版本与release正式版本的区别.markdown" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/_posts/2019-02-12-超详细，从零开始搭建阿里云服务器（centos7）第一章 远程连接.markdown" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/_posts/2019-02-12-超详细，从零开始搭建阿里云服务器（centos7）第二章 创建用户.markdown" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/_posts/2019-02-13-超详细，从零开始搭建阿里云服务器（centos7）第三章 安装jdk.markdown" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/_posts/2019-02-13-超详细，从零开始搭建阿里云服务器（centos7）第四章 安装tomcat.markdown" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/_posts/2019-02-17-超详细，从零开始搭建阿里云服务器（centos7）第五章 安装mysql.markdown" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/_posts/2019-02-19-MySQL中优化SQL语句的查询方法.markdown" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/_posts/2019-02-19-某个表有近千万数据，CRUD比较慢，如何优化？分库分表了是怎么做的？分表分库了有什么问题？有用到中间件么?他们的原理知道么？.markdown" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/_posts/2019-05-21-同一个类的不同方法,A方法没有@Transactional，B方法有@Transactional,A调用B方法，事务不起作用.markdown" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/_posts/2019-05-24-单点登录（SSO）看这一篇就够了.markdown" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/_posts/2019-06-27-ThreadLocal笔记.markdown" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/_posts/2019-07-14-Java并发编程（原子性、可见性、有序性、synchronized、CAS、volatile、ThreadLocal）笔记.markdown" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/_posts/2019-09-26-消息队列小解.markdown" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/_posts/2020-02-14-使用消息队列后引发的血案.markdown" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/_posts/2020-02-25-设计模式之单例模式.markdown" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/_posts/2020-02-25-设计模式之简单工厂模式.markdown" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/climbCSDNblogsUtils.iml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/lib/jHTMLToMd-master.jar" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/pom.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/Html2Md.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/climbUtil.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/target/classes/Html2Md.class" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/target/classes/climbUtil.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/README.md" beforeDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/jarRepositories.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/climbUtil.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/climbUtil.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/Html2Md.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/Html2Md.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/climbUtil.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/climbUtil.class" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -71,36 +33,30 @@
       </set>
     </option>
   </component>
+  <component name="MarkdownSettingsMigration">
+    <option name="stateVersion" value="1" />
+  </component>
   <component name="MavenImportPreferences">
     <option name="generalSettings">
       <MavenGeneralSettings>
         <option name="userSettingsFile" value="$PROJECT_DIR$/../../settings-aolin.xml" />
       </MavenGeneralSettings>
     </option>
-    <option name="importingSettings">
-      <MavenImportingSettings>
-        <option name="importAutomatically" value="true" />
-      </MavenImportingSettings>
-    </option>
   </component>
   <component name="ProjectId" id="1YpOT4Rc9YmTSu7Wa42SflJJA6V" />
   <component name="ProjectLevelVcsManager" settingsEditedManually="true" />
   <component name="ProjectViewState">
     <option name="hideEmptyMiddlePackages" value="true" />
-    <option name="showExcludedFiles" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent">
-    <property name="RunOnceActivity.ShowReadmeOnStart" value="true" />
-    <property name="SHARE_PROJECT_CONFIGURATION_FILES" value="true" />
-    <property name="WebServerToolWindowFactoryState" value="false" />
-    <property name="aspect.path.notification.shown" value="true" />
-    <property name="last_opened_file_path" value="$PROJECT_DIR$/lib" />
-    <property name="project.structure.last.edited" value="Libraries" />
-    <property name="project.structure.proportion" value="0.15" />
-    <property name="project.structure.side.proportion" value="0.0" />
-    <property name="settings.editor.selected.configurable" value="preferences.editor" />
-  </component>
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "RunOnceActivity.OpenProjectViewOnStart": "true",
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "SHARE_PROJECT_CONFIGURATION_FILES": "true",
+    "last_opened_file_path": "/Users/admin/WORK/myworkspace/climbCSDNblogsUtils"
+  }
+}]]></component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
       <recent name="$PROJECT_DIR$/lib" />
@@ -132,6 +88,7 @@
       </list>
     </option>
   </component>
+  <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
   <component name="SvnConfiguration">
     <configuration />
   </component>
@@ -149,71 +106,5 @@
   </component>
   <component name="TypeScriptGeneratedFilesManager">
     <option name="version" value="1" />
-  </component>
-  <component name="WindowStateProjectService">
-    <state width="450" height="466" key="DebuggerActiveHint" timestamp="1583645018309">
-      <screen x="0" y="23" width="1792" height="1097" />
-    </state>
-    <state width="450" height="466" key="DebuggerActiveHint/0.23.1792.1097@0.23.1792.1097" timestamp="1583645018309" />
-    <state x="658" y="294" key="DetectedRootsChooserDialog" timestamp="1583656987436">
-      <screen x="0" y="23" width="1792" height="1097" />
-    </state>
-    <state x="658" y="294" key="DetectedRootsChooserDialog/0.23.1792.1097@0.23.1792.1097" timestamp="1583656987436" />
-    <state width="1750" height="224" key="GridCell.Tab.0.bottom" timestamp="1583661780634">
-      <screen x="0" y="23" width="1792" height="1097" />
-    </state>
-    <state width="1750" height="224" key="GridCell.Tab.0.bottom/0.23.1792.1097@0.23.1792.1097" timestamp="1583661780634" />
-    <state width="1750" height="224" key="GridCell.Tab.0.center" timestamp="1583661780633">
-      <screen x="0" y="23" width="1792" height="1097" />
-    </state>
-    <state width="1750" height="224" key="GridCell.Tab.0.center/0.23.1792.1097@0.23.1792.1097" timestamp="1583661780633" />
-    <state width="1750" height="224" key="GridCell.Tab.0.left" timestamp="1583661780632">
-      <screen x="0" y="23" width="1792" height="1097" />
-    </state>
-    <state width="1750" height="224" key="GridCell.Tab.0.left/0.23.1792.1097@0.23.1792.1097" timestamp="1583661780632" />
-    <state width="1750" height="224" key="GridCell.Tab.0.right" timestamp="1583661780634">
-      <screen x="0" y="23" width="1792" height="1097" />
-    </state>
-    <state width="1750" height="224" key="GridCell.Tab.0.right/0.23.1792.1097@0.23.1792.1097" timestamp="1583661780634" />
-    <state width="1750" height="224" key="GridCell.Tab.1.bottom" timestamp="1583661780482">
-      <screen x="0" y="23" width="1792" height="1097" />
-    </state>
-    <state width="1750" height="224" key="GridCell.Tab.1.bottom/0.23.1792.1097@0.23.1792.1097" timestamp="1583661780482" />
-    <state width="1750" height="224" key="GridCell.Tab.1.center" timestamp="1583661780481">
-      <screen x="0" y="23" width="1792" height="1097" />
-    </state>
-    <state width="1750" height="224" key="GridCell.Tab.1.center/0.23.1792.1097@0.23.1792.1097" timestamp="1583661780481" />
-    <state width="1750" height="224" key="GridCell.Tab.1.left" timestamp="1583661780481">
-      <screen x="0" y="23" width="1792" height="1097" />
-    </state>
-    <state width="1750" height="224" key="GridCell.Tab.1.left/0.23.1792.1097@0.23.1792.1097" timestamp="1583661780481" />
-    <state width="1750" height="224" key="GridCell.Tab.1.right" timestamp="1583661780481">
-      <screen x="0" y="23" width="1792" height="1097" />
-    </state>
-    <state width="1750" height="224" key="GridCell.Tab.1.right/0.23.1792.1097@0.23.1792.1097" timestamp="1583661780481" />
-    <state x="434" y="233" key="Maven.ArtifactSearchDialog" timestamp="1583639670836">
-      <screen x="0" y="23" width="1792" height="1097" />
-    </state>
-    <state x="434" y="233" key="Maven.ArtifactSearchDialog/0.23.1792.1097@0.23.1792.1097" timestamp="1583639670836" />
-    <state x="697" y="496" key="ReplaceDuplicatesPrompt" timestamp="1583653205020">
-      <screen x="0" y="23" width="1792" height="1097" />
-    </state>
-    <state x="697" y="496" key="ReplaceDuplicatesPrompt/0.23.1792.1097@0.23.1792.1097" timestamp="1583653205020" />
-    <state x="384" y="153" key="SettingsEditor" timestamp="1583660413502">
-      <screen x="0" y="23" width="1792" height="1097" />
-    </state>
-    <state x="384" y="153" key="SettingsEditor/0.23.1792.1097@0.23.1792.1097" timestamp="1583660413502" />
-    <state width="500" height="445" key="SwitcherDM" timestamp="1583644843101">
-      <screen x="0" y="23" width="1792" height="1097" />
-    </state>
-    <state width="500" height="445" key="SwitcherDM/0.23.1792.1097@0.23.1792.1097" timestamp="1583644843101" />
-    <state x="404" y="636" width="542" height="484" key="extract.method.dialog" timestamp="1583653203572">
-      <screen x="0" y="23" width="1792" height="1097" />
-    </state>
-    <state x="404" y="636" width="542" height="484" key="extract.method.dialog/0.23.1792.1097@0.23.1792.1097" timestamp="1583653203572" />
-    <state x="561" y="268" key="search.everywhere.popup" timestamp="1583659023741">
-      <screen x="0" y="23" width="1792" height="1097" />
-    </state>
-    <state x="561" y="268" key="search.everywhere.popup/0.23.1792.1097@0.23.1792.1097" timestamp="1583659023741" />
   </component>
 </project>

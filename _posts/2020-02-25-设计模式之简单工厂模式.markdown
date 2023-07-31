@@ -1,0 +1,145 @@
+---
+layout:  post
+title:   设计模式之简单工厂模式
+date:   2020-02-25 10:49:49
+author:  'zhangtao'
+image: '/img/post-bg-unix-linux.jpg'
+catalog: [ WORK ]
+tags:
+- 设计模式
+
+---
+
+
+## 1.定义
+
+属于类创建型模式。在简单工厂模式中，可以根据参数的不同返回不同类的实例。简单工厂模式专门定义一个类来负责创建其他类的实例，被创建的实例通常都具有共同的父类。
+
+## 2.简单工厂模式结构
+
+简单工厂模式包含如下角色：
+
+-  Factory：工厂角色 工厂角色负责实现创建所有实例的内部逻辑。例子中的SimpleAnimalFactory 
+
+```java
+/**
+     * 简单工厂
+     */
+    public class SimpleAnimalFactory {
+   
+        /**
+         * 第一种方法
+         * @param animalTypeEnum
+         * @return
+         */
+        public static Animal createAnimal(AnimalTypeEnum animalTypeEnum) {
+   
+            Animal animal = null;
+            switch (animalTypeEnum) {
+   
+                case Cat: animal = new Cat();
+                break;
+                case Dog: animal = new Dog();
+                break;
+                case Bird: animal = new Bird();
+                break;
+            }
+            return animal;
+        }
+    
+    
+        /**
+         * 第二种方法(jdk8)
+         */
+        private static Map<AnimalTypeEnum, Supplier<Animal>> map = new HashMap<>();
+        static {
+   
+            map.put(AnimalTypeEnum.Bird,Bird::new);
+            map.put(AnimalTypeEnum.Cat,Cat::new);
+            map.put(AnimalTypeEnum.Dog,Dog::new);
+        }
+    
+        public static Animal createAnimal2(AnimalTypeEnum animalTypeEnum) {
+   
+            return map.get(animalTypeEnum).get();
+        }
+    
+        public static void main(String[] args) {
+   
+            Animal animal = SimpleAnimalFactory.createAnimal(AnimalTypeEnum.Dog);
+            animal.say();
+    
+            Animal animal2 = SimpleAnimalFactory.createAnimal2(AnimalTypeEnum.Cat);
+            animal2.say();
+        }
+    
+    
+    }
+    
+    public enum AnimalTypeEnum {
+   
+        Bird("bird"),
+        Cat("cat"),
+        Dog("dog");
+        private String type;
+    
+        AnimalTypeEnum(String type) {
+   
+            this.type = type;
+        }
+    
+        public String getType() {
+   
+            return type;
+        }
+    }
+```
+
+-  Product：抽象产品角色 抽象产品角色是所创建的所有对象的父类，负责描述所有实例所共有的公共接口。例子中的Animal 
+
+```java
+public abstract class Animal {
+   
+        abstract public void say();
+    }
+```
+
+-  ConcreteProduct：具体产品角色 具体产品角色是创建目标，所有创建的对象都充当这个角色的某个具体类的实例。例子中的bird、dog、cat 
+
+```java
+public class Bird extends Animal {
+   
+        @Override
+        public void say() {
+   
+            System.out.println("咕咕咕");
+        }
+    }
+    
+    public class Cat extends Animal {
+   
+        @Override
+        public void say() {
+   
+            System.out.println("喵喵喵");
+        }
+    }
+
+    public class Dog extends Animal {
+   
+        @Override
+        public void say() {
+   
+            System.out.println("汪汪汪");
+        }
+    }
+```
+
+## 3.简单工厂模式分析
+
+将对象的创建和对象本身业务处理分离可以降低系统的耦合度，使得两者修改起来都相对容易。
+
+简单工厂模式最大的问题在于**工厂类的职责相对过重**，增加新的产品需要修改工厂类的判断逻辑，这一点**与开闭原则是相违背**的。
+
+简单工厂模式的要点在于：当你需要什么，只需要传入一个正确的参数，就可以获取你所需要的对象，而无须知道其创建细节。
+

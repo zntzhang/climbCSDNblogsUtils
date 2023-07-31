@@ -1,0 +1,108 @@
+---
+layout:  post
+title:   MySql存储引擎和数据结构
+date:   2018-11-13 15:49:59
+author:  'zhangtao'
+image: '/img/post-bg-unix-linux.jpg'
+catalog: [ WORK ]
+tags:
+- 数据库
+
+---
+
+
+
+## InnoDB
+
+- 支持事务 
+- 支持外键 
+- 对比MyISAM引擎，写的处理效率会差一些，并且会占用更多的磁盘空间以保留数据和索引
+
+## MyISAM
+
+- 不支持事务 
+- 不支持外键 
+- 优势是访问速度快，对事务完整性没有要求或者以select，insert为主的应用基本上可以用这个引擎来创建表
+
+## MEMORY
+
+- 数据是放在内存中的。但是一旦服务关闭，表中的数据就会丢失掉
+
+
+我们数据库用的是哪种数据结构呢？我们先举出常用的几种数据类型进行比较
+
+## Hash表
+
+-  优点：查找快，时间复杂度 O(1)  
+-  缺点：范围查找慢 
+
+## 二叉树
+
+-  优点：时间快，时间复杂度 O(log(N))，二分查找  
+-  缺点： 不平衡，树高太高，磁盘IO开销大 
+
+
+![img](https://imgconvert.csdnimg.cn/aHR0cHM6Ly9naXRlZS5jb20venQxOTk0MTIxNC9pbWFnZUJlZC9yYXcvbWFzdGVyL3VQaWMvJUU0JUJBJThDJUU1JThGJTg5JUU2JUEwJTkxJUU1JUE0JUIxJUU4JUExJUExMDMuanBn?x-oss-process=image/format,png)
+
+## B树
+
+多叉树，它的非叶子节点也存数据（这里数据指的是聚簇索引中的所在行数据，非聚簇索引中的主键id，下面会讲到）
+
+优点：
+
+- 如果要访问的数据离根节点很近，那么检索的时候会要比B+树快。
+
+
+![img](https://imgconvert.csdnimg.cn/aHR0cHM6Ly9naXRlZS5jb20venQxOTk0MTIxNC9pbWFnZUJlZC9yYXcvbWFzdGVyL3VQaWMvYjMuanBn?x-oss-process=image/format,png)
+
+## B+树
+
+它的非叶子节点是不存储数据，只存储索引，数据都存在叶子节点上
+
+因为存储空间有限，如果非叶子节点存储了数据，那么它的叉数就没有不存的多。叉数变多，树就会更矮
+
+优点：
+
+-  B+树的层级更少：开销小；  
+-  B+树查询速度更稳定：B+所有关键字数据地址都存在叶子节点上，所以每次查找的次数都相同所以查询速度要比B树更稳定;  
+-  B+树范围查找更快：B+树所有的叶子节点数据构成了一个有序链表，在查询大小区间的数据时候更方便。  
+-  B+树全节点遍历更快：B+树遍历整棵树只需要遍历所有的叶子节点即可，而不需要像B树一样需要对每一层进行遍历，这有利于数据库做全表扫描。 （innodb存储引擎中表的数据就是存在聚簇索引中，所以全表扫描就是遍历所有的聚簇索引） 
+
+
+![img](https://imgconvert.csdnimg.cn/aHR0cHM6Ly9naXRlZS5jb20venQxOTk0MTIxNC9pbWFnZUJlZC9yYXcvbWFzdGVyL3VQaWMvYisucG5n?x-oss-process=image/format,png)
+
+
+InnoDB 主键使用的是聚簇索引，MyISAM 不管是主键索引，还是二级索引使用的都是非聚簇索引
+
+因为我们日常工作中，用的最多的是InnoDB存储引擎，所以我们着重讲一下它的数据结构
+
+InnoDB默认的数据结构是B+树， 简单的将InnoDB中每张表的存储结构其实就是多个B+树。包括一个存储着行数据的聚簇索引的B+树和其他存储着主键id的非聚簇索引构成。
+
+## 聚簇索引
+
+-  在InnoDB中主键索引用的是聚簇索引，如果该表未设置主键，那么会默认生成一个主键索引  
+-  聚簇索引的key存的是索引值，value存储的是这一行的数据。  
+-  所以InnoDB表中的所以数据都存储在聚簇索引中，所以如果发生了全文扫描数据既遍历整个聚簇索引树 
+
+## 非聚簇索引
+
+-  在InnoDB中除主键索引外的其他索引用的是非聚簇索引  
+-  它的特点是key存的是索引值，value存的是主键索引的id  
+-  当我们sql中用到了非聚簇索引的话，会先从非聚簇索引树中找到对应的主键id，然后再从聚簇索引树中找到主键对应的行数据（会遍历两棵树，称为回表）。  
+-  回表会比较费时间，如果索引的字段覆盖了我们查询的所有字段的话，那么就不需要去进行回表查询，我们称为覆盖索引 现在我创建了联合索引(username,age)，在查询数据的时候要查询出的列在非聚簇索引都存在！所以，就不用回表。 
+
+```java
+select username , age from user where username = 'Java' and age =22
+```
+
+- 如果查询的数据量超过25%，那么数据库会判定回表的成本会超过全文遍历的成本，就不会使用索引了
+
+
+联合索引经常配合覆盖索引一起使用，例如上面的例子
+
+## 最左前缀原则
+
+我们一般讲(username,age,sex)联合索引，既建了【username】，【username，age】，【username，age, sex】三个索引。
+
+而我们发现【username，sex】也是能用到索引的，但是其实匹配到的是【username】这个索引
+

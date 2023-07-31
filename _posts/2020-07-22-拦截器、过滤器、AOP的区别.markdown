@@ -1,0 +1,47 @@
+---
+layout:  post
+title:   拦截器、过滤器、AOP的区别
+date:   2020-07-22 17:41:58
+author:  'zhangtao'
+image: '/img/post-bg-unix-linux.jpg'
+catalog: [ WORK ]
+tags:
+- spring
+- java
+
+---
+
+
+
+1. spring中独有的 
+2. 在SpringMVC的配置文件中配置 
+3. 可对请求和响应处理
+
+```java
+<mvc:interceptors>
+    <mvc:interceptor>
+        <mvc:mapping path="/**" />
+         <bean class="com.scorpios.atcrowdfunding.web.LoginInterceptor"></bean>
+    </mvc:interceptor>
+</mvc:interceptors>
+```
+
+1. 可以针对自定义的url拦截
+
+
+1. servlet中有的 
+2. 可以针对自定义的url拦截 
+3. 可对请求和响应处理
+
+```java
+@WebFilter(urlPatterns = "/*")
+```
+
+
+1.  定义在类或方法上  
+2.  对方法和参数处理  
+3.  Advice: 通知的几种类型 @Before 执行前通知 @Around 执行环绕通知 成功走finall，失败走catch @After 执行后置通知 @AfterReturning 执行返回后通知 @AfterThrowing 抛出异常通知 
+
+
+Filter-&gt;Interceptor-&gt;AOP-&gt;controller
+

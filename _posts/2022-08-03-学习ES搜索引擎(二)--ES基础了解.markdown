@@ -1,0 +1,73 @@
+---
+layout:  post
+title:   学习ES搜索引擎(二)--ES基础了解
+date:   2022-08-03 14:02:39
+author:  'zhangtao'
+image: '/img/post-bg-unix-linux.jpg'
+catalog: [ WORK ]
+tags:
+- es
+- elasticsearch
+
+---
+
+
+ES是一个分布式的全文搜索引擎 我们对数据库比较熟悉，刚开始了解ES时可以跟MySQL进行对比
+
+
+MySQL是关系型数据库，里面的数据是一行行数据。而ES是以一条条Document(文档)为单位存储的。Document的结构就是Json数据结构。
+
+我们举例一条Document分析下结构
+
+```java
+{
+   
+        "_index" : "erp-abc", // 索引（数据库）
+        "_type" : "logging",  // 类型（表）
+        "_id" : "1",          // id
+        "_score" : 1.0,       // 得分
+        "_source" : {
+            // 数据
+          "threadId" : 577,
+          "hostName" : "1.1.1",
+          "companyId" : -1,
+          "level" : "INFO",
+          "logger" : "xxx",
+          "message" : "xxx",
+          "clueId" : "123456",
+          "staffId" : -1,
+          "applicationName" : "xxx",
+          "threadName" : "JobRunnerPool-thread-6",
+          "timestamp" : "2022-07-25T14:17:04.479+08:00"
+        }
+```
+
+相对应MySQL存储的话如下 logger表
+
+
+上一节我们学习了怎么安装ELK，好了接下来我们可以通过Kibana学习下ES的增删改查语句
+
+```java
+GET /                                          // 查看版本
+GET /_cat/nodes?v                     // 查看节点
+GET /_cat/indices?v                    // 查看索引
+GET /_cat/shards?v                    // 查看分片
+GET /erp-basis/logging/_mapping    // 查看索引类型结构
+
+PUT /test-index   // 新增索引 
+DELETE /test-index // 删除索引 
+
+PUT /test-index/test-type/1   // 新增文档
+{ "test": "1" }
+
+POST /test-index/test-type/1_update  // 修改文档
+{ "test": "2" }
+
+GET /test-index/test-type/1   // 文档详情
+
+DELETE /test-index/test-type/1   // 删除文档
+```
+
+下面重点讲下ES的查询语句,对比MySQL方便理解
+
+

@@ -1,0 +1,26 @@
+---
+layout:  post
+title:   超详细，从零开始搭建阿里云服务器（centos7）第一章 远程连接
+date:   2019-02-12 16:57:54
+author:  'zhangtao'
+image: '/img/post-bg-unix-linux.jpg'
+catalog: [ WORK ]
+tags:
+- linux
+
+---
+
+
+博主前两天买了3年最低配的阿里云玩玩，这次写一个笔记记录下自己搭服务器所遇到的坑。
+
+## 1.购买阿里云
+
+
+首先在阿里云官网 [https://www.aliyun.com/?spm=5176.2020520001.aliyun_topbar.1.7be34bd3zdmGPh](https://www.aliyun.com/?spm=5176.2020520001.aliyun_topbar.1.7be34bd3zdmGPh)选择想要的服务器进行购买 ![img](https://img-blog.csdnimg.cn/2019021217005026.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3FxXzM3MjIxOTkx,size_16,color_FFFFFF,t_70)在上图查看自己的外网ip，如果忘记登录密码了可以进行点击更多来初始化实例密码。初始的用户名是root。
+
+## 2.远程连接到自己的服务器
+
+
+
+知道自己的阿里云实例的用户名密码就可以进行远程连接啦， 博主用的是Xshell6教育版进行远程连接， 新建会话填写对应的主机ip就可以进行连接 ![img](https://img-blog.csdnimg.cn/20190212165028957.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3FxXzM3MjIxOTkx,size_16,color_FFFFFF,t_70) 用户名密码填写正确后，出现下面画面就表示连接成功！ ![img](https://img-blog.csdnimg.cn/20190212164834658.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3FxXzM3MjIxOTkx,size_16,color_FFFFFF,t_70)
+
