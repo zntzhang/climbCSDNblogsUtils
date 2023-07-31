@@ -107,7 +107,7 @@ public class climbUtil {
 //        System.out.println(md);
 
         String jekylltr = "---\n" + "layout:  post\n" + jekyllTitle + jekyllDate
-                + "author:  'zhangtao'\nimage: '/img/post-bg-unix-linux.jpg'\ncatalog: [ WORK ]\n"
+                + "author:  'zhangtao'\nimage: '/img/post-bg-unix-linux.jpg'\ncategories: [ WORK ]\n"
                 + jekyllTags + "\n---\n";
         String date = time.split(" ")[0];
         String mdFileName = "./_posts/" + date + '-' + fileName + ".markdown";
